@@ -1,4 +1,11 @@
-import help from './help';
+import { Message } from 'discord.js';
+import test from './test';
 
-// eslint-disable-next-line import/prefer-default-export
-export { help };
+export default {
+  test: {
+    fullComand: 'test',
+    shortcut: 't',
+    description: 'test',
+    method: (message: Message) => test(message),
+  },
+};

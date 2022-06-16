@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { readFileSync, readdirSync } from 'fs';
 import path from 'path';
-import Logger from '../util/logger';
+import logger from '../util/logger';
 import { LogType } from '../util/logger/enum/log-type.enum';
 import CustomError from '../util/error';
-import Config from '../config';
 
 const folderPath = './src/i18n/locales';
 const getJsonFromFile = (fileName : string) => ({
@@ -22,34 +21,38 @@ const locales: Record<string, any> = filesInLocales.length > 1
   : getJsonFromFile(filesInLocales[0]);
 
 if (!locales.en_US) {
-  Logger('No primary language found.(en_US.json)', LogType.ERROR);
+  logger('No primary language found.(en_US.json)', LogType.ERROR);
   throw new CustomError('No primary language found.(en_US.json)');
 }
 
 const getTranslation = (
   keychain: string,
-  translation: Record<string, any> = locales[Config.lang],
+  translation: Record<string, any> = locales[<string>process.env.I18N],
 ) => {
   if (!keychain.length) return null;
   const keys = keychain.split('.');
 
   if (keys.length === 1) return translation[keys[0]];
-  return keys.reduce((previous: any, current: string, index) => (
+  return keys.reduce((
+    previous: string,
+    current: string | any,
+    index: number
+  ): string => (
     index <= 1
-      ? translation[previous][current]
-      : previous[current]
+      ? translation[previous]?.[current]
+      : previous?.[current]
   ));
 };
 
 const i18n = (_key: string, values = {}): string => {
   let translation = getTranslation(_key);
   if (!translation) {
-    Logger(`Key "${_key}" does not exist in ${Config.lang} locale.`, LogType.WARN);
+    logger(`Key "${_key}" does not exist in ${<string>process.env.I18N} locale.`, LogType.WARN);
     translation = getTranslation(_key, locales.en_US);
   }
 
   if (!translation) {
-    Logger(`Key "${_key}" does not exist`, LogType.WARN);
+    logger(`Key "${_key}" does not exist`, LogType.WARN);
   }
 
   Object.entries(values).forEach(([key, value]) => {

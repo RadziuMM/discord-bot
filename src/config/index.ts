@@ -1,7 +1,7 @@
 import env from './env';
-import commands from './commands';
+import guard from './guard';
 
 export default {
   ...env,
-  commands,
+  ...guard,
 };

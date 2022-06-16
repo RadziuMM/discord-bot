@@ -1,3 +1,15 @@
 {
-  "test": "200"
+  "test": "200",
+  "message": {
+    "success": {
+      "left": "**[Pozostało: {time}]** {text}"
+    }
+  },
+  "alertMessage": {
+    "msg403": "Brak uprawnień do wykonania tej komendy. Incydent został odnotowany."
+  },
+  "commandDescription": {
+    "header": "***Dostępne komendy:***",
+    "help": "Wyświetla wszystkie dostępne komendy."
+  }
 }

@@ -1,5 +1,5 @@
 import moment from 'moment';
-import Logger from './index';
+import logger from './index';
 import { LogType } from './enum/log-type.enum';
 
 const cases = [
@@ -16,6 +16,6 @@ describe('logger', () => {
     const time = moment(date).format('DD-MM-YYYY HH:mm:ss');
 
     const value = `[${time}][${type || 'log'}]: ${text}`;
-    expect(Logger(`${text}`, type)).toBe(value);
+    expect(logger(`${text}`, type)).toBe(value);
   });
 });

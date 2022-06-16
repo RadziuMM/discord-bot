@@ -25,5 +25,6 @@ module.exports = {
     'linebreak-style': 'off',
     'import/no-unresolved': 'off',
     'consistent-return': 'off',
+    'no-param-reassign': 'off',
   },
 };
