@@ -1,15 +1,28 @@
 {
   "test": "200",
   "message": {
-    "success": {
-      "left": "**[Left: {time}]** {text}"
-    }
+    "queue_now": "Now: **{title}**",
+    "queue_empty": "Queue is empty!",
+    "left": "**[Left: {time}]** {text}",
+    "song_not_found": "No song found!",
+    "added_song": "**{title}** - added to queue!",
+    "added_songs": "New songs added to queue!"
   },
-  "alertMessage": {
-    "msg403": "No authority to execute this command. The incident was noted."
+  "alert_message": {
+    "unknow_error": "An unexpected error occurred.",
+    "forbidden": "You do not have permission to execute this command, the incident has been logged.",
+    "bot_cannot_access": "The bot does not have permission to execute this command.",
+    "room_not_found": "The bot cannot find your room.",
+    "private_playlist": "You can't use private mixtapes"
   },
-  "commandDescription": {
+  "command_description": {
     "header": "***Available commands:***",
-    "help": "Display all avalible commands."
+    "help": "Display all avalible commands.",
+    "showQueue": "Shows the play queue.",
+    "play": "Add a song (yt/spotify) to play last.",
+    "next": "Add song (yt/spotify) to play as next.",
+    "skip": "Skip (number)",
+    "stop": "Clear the playback queue.",
+    "leave": "Leave room (reset)."
   }
 }

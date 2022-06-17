@@ -42,7 +42,11 @@ const main = () => {
       const task = tasksArray
         .find(({ fullComand, shortcut }) => [fullComand, shortcut].includes(command));
 
-      if (task) task.method(message);
+      if (task) {
+        task.method(message)
+        logger(`#${message.guild?.name}: @${message.author.username}: !${command} - full request: "${message.content}"`, LogType.INFO);
+      };
+      
       message.delete();
     }
   });

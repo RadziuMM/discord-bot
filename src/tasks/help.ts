@@ -1,27 +1,30 @@
 import { Message, TextChannel } from 'discord.js';
 import { createMessage } from '../util/messages';
 import { i18n } from '../i18n';
-import guard from '../guard';
-import Wheel from '../guard/group.enum';
+import { hasPermissions, isAllowed } from '../guard';
+import Wheel from '../guard/enum/group.enum';
+import Permission from '../guard/enum/permission.enum';
 
 const help = async(
   message: Message,
   tasks: Record<string, any>,
   commands: Record<string, string>,
-) => {
-  if (!guard(message, [Wheel.wheel2])) {
-    return createMessage(
-      message.channel as TextChannel,
-      i18n('alertMessage.msg403'),
-      {},
-    );
-  }
+): Promise<void> => {
+  if (
+    !await isAllowed(message, [
+      Wheel.WHEEL0,
+      Wheel.WHEEL1,
+      Wheel.WHEEL2,
+      Wheel.ADMIN,
+      Wheel.SUPER
+    ]) || !await hasPermissions(message, [Permission.WRITE])
+  ) return;
 
-  let helpMsg = `${i18n('commandDescription.header')} \n`;
-  helpMsg += `***1.*** ${commands.fullComand}/${commands.shortcut} ${i18n('commandDescription.help')} \n`
+  let helpMsg = `${i18n('command_description.header')} \n`;
+  helpMsg += `**${commands.fullComand}/${commands.shortcut}** - ${i18n('command_description.help')} \n`
 
-  Object.keys(tasks).forEach((key: string, index: number) => {
-    helpMsg += `***${index + 2}.*** ${tasks[key].fullComand}/${tasks[key].shortcut} ${tasks[key].description}`
+  Object.keys(tasks).forEach((key: string) => {
+    helpMsg += `**${tasks[key].fullComand}/${tasks[key].shortcut}** - ${tasks[key].description} \n`
   })
 
   await createMessage(
@@ -39,7 +42,7 @@ export default (tasks: Record<string, any>): Record<string, any> => {
 
   return {
     ...commands,
-    description: i18n('commandDescription.help'),
+    description: i18n('command_description.help'),
     method: (message: Message) => help(
       message,
       tasks,

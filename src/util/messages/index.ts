@@ -16,7 +16,7 @@ const intervalContent = async(id: string) => {
       await deleteMessage(id);
     } else {
       if (element.options?.countdown) {
-        await editMessage(id, i18n('message.success.left', {
+        await editMessage(id, i18n('message.left', {
           time: new Date(element.deleteAfter).toISOString().substring(11, 19),
           text: element.options?.countdown,
         }));
@@ -29,7 +29,7 @@ const intervalContent = async(id: string) => {
 const createMessage = async (
   textChannel: TextChannel,
   content: string,
-  options: Record<string, unknown>,
+  options: Record<string, any> = {},
 ) => {
   const id = uuidv1();
   await textChannel.send(content).then((message: Message) => {
@@ -37,7 +37,7 @@ const createMessage = async (
       id,
       textChannel,
       message,
-      deleteAfter: timeout,
+      deleteAfter: options.timeout || timeout,
       options,
       intervalFunction: () => intervalContent(id),
     });
