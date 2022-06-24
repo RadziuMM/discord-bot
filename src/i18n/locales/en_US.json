@@ -23,6 +23,8 @@
     "next": "Add song (yt/spotify) to play as next.",
     "skip": "Skip (number)",
     "stop": "Clear the playback queue.",
-    "leave": "Leave room (reset)."
+    "leave": "Leave room (reset).",
+    "move": "Move @user to your room.",
+    "clear": "Delete some messages from chat"
   }
 }

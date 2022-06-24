@@ -6,7 +6,7 @@ const tasks: Record<string, any> = {
   ...music,
 };
 
-import help from './help';
+import help from './common/help/help';
 
 export default {
   help: help(tasks),

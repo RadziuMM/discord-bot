@@ -23,6 +23,8 @@
     "next": "Dodaj piosenkę (yt/spotify) do odtwarzania jako następną.",
     "skip": "Pomiń (liczba).",
     "stop": "Wyczyść kolejkę odtwarzania.",
-    "leave": "Opuść pokój (reset)."
+    "leave": "Opuść pokój (reset).",
+    "move": "Przenieś @user do swojego pokoju.",
+    "clear": "Usuń kilka wiadomości z czatu"
   }
 }

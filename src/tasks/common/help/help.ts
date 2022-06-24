@@ -1,9 +1,9 @@
 import { Message, TextChannel } from 'discord.js';
-import { createMessage } from '../util/messages';
-import { i18n } from '../i18n';
-import { hasPermissions, isAllowed } from '../guard';
-import Wheel from '../guard/enum/group.enum';
-import Permission from '../guard/enum/permission.enum';
+import { createMessage } from '../../../util/messages';
+import { i18n } from '../../../i18n';
+import { hasPermissions, isAllowed } from '../../../guard';
+import Wheel from '../../../guard/enum/group.enum';
+import Permission from '../../../guard/enum/permission.enum';
 
 const help = async(
   message: Message,
@@ -16,7 +16,7 @@ const help = async(
       Wheel.WHEEL1,
       Wheel.WHEEL2,
       Wheel.ADMIN,
-      Wheel.SUPER
+      Wheel.SUPER,
     ]) || !await hasPermissions(message, [Permission.WRITE])
   ) return;
 

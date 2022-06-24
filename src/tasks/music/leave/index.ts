@@ -10,7 +10,7 @@ export default async (message: Message): Promise<void> => {
       Wheel.WHEEL1,
       Wheel.WHEEL2,
       Wheel.ADMIN,
-      Wheel.SUPER
+      Wheel.SUPER,
     ]) || !await hasPermissions(message, [Permission.WRITE])
   ) return;
 
