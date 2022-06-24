@@ -101,7 +101,7 @@ const play = async(id: string): Promise<void> => {
     if(room.trackedSongMessage) deleteMessage(room.trackedSongMessage);
     
     logger(`A problem was encountered while playing a song #${room.songs[0]?.title}. Error message:${error}`, LogType.ERROR);
-    createMessage(room.textChannel, i18n('message.error.fail_play_song', { title: room.songs[0].title }), {});
+    createMessage(room.textChannel, i18n('message.error.fail_play_song', { title: room.songs[0]?.title }), {});
   }
 }
 
@@ -147,12 +147,12 @@ const playNext = async(message: Message, songs: Song[]): Promise<void> => {
     room.songs = songs;
     return play(id);
   }
-
+  
   const _songs = [...room.songs];
   const cutt = _songs.shift() as Song;
-
+  
   room.songs = [cutt, ...songs, ..._songs];
-  if (room.songs.length) play(id);
+  if (!room.songs.length) play(id);
 }
 
 const skip = async(id: string, skipBy: number): Promise<void> => {
