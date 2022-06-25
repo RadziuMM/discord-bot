@@ -14,7 +14,8 @@
     "bot_cannot_access": "Bot nie posiada uprawnień do wykonania tej komendy.",
     "room_not_found": "Bot nie może znaleść twojego pokoju.",
     "room_not_exist": "Bot nie jest przypisany do żadnego z poki.",
-    "private_playlist": "Nie możesz używać prywatnych mixtape'ów"
+    "private_playlist": "Nie możesz używać prywatnych mixtape'ów",
+    "not_in_same_channel": "Nie znajdujesz się w pokoju z botem."
   },
   "command_description": {
     "header": "***Dostępne komendy:***",

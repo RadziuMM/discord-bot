@@ -20,20 +20,20 @@ export default async (message: Message): Promise<void> => {
   
   if (!success && _message) {
     createMessage(message.channel as TextChannel, _message);
-  } else if (!data?.length) {
+  } else if (data?.songs && !data?.songs?.length) {
     createMessage(
       message.channel as TextChannel,
       i18n('message.queue_empty'),
     );
-  } else {
+  } else if (data?.songs) {
     let msg = '**Queue** \n';
-    const min = Math.min(10, data.length)
+    const min = Math.min(10, data.songs.length)
     for(let i = 0; i < min; i++) {
       msg += i 
-        ? `#${i} - **${data[i].title}** \n`
-        : `${i18n('message.queue_now', { title: data[i].title })} \n`;
+        ? `#${i} - **${data.songs[i].title}** \n`
+        : `${i18n('message.queue_now', { title: data.songs[i].title })} \n`;
     }
 
-    createMessage(message.channel as TextChannel, msg, { timeout: 50 * 1000 });
+    createMessage(message.channel as TextChannel, msg, { timeout: 15 * 1000 });
   }
 };

@@ -12,7 +12,7 @@ import { LogType } from '../util/logger/enum/log-type.enum';
 import { createMessage, deleteMessage } from '../util/messages';
 import { Room } from './interface/room.interface';
 import { Song } from './interface/song.interface';
-import { Message } from 'discord.js';
+import { Message, TextChannel } from 'discord.js';
 import { Response } from './interface/response.interface';
 
 const map: Map<string, any> = new Map();
@@ -21,9 +21,9 @@ const isSameChannel = (
   room: Room,
   message: Message,
 ): boolean => {
-  if (room.voiceChannel !== message.member?.voice.channel) {
+  if (!room || room.voiceChannel !== message.member!.voice.channel) {
     createMessage(
-      room.textChannel,
+      message.channel as TextChannel,
       i18n('alert_message.not_in_same_channel'),
     );
     logger(`The user was in a different room from the bot.`, LogType.INFO);
@@ -170,12 +170,17 @@ const getQueue = async(
   message: Message,
 ): Promise<Response> => {
   const room: Room = map.get(message.guild!.id);
-  if (!isSameChannel(room, message)) return { success: false };
+  if (!room) {
+    return { 
+      success: false,
+      message: i18n('alert_message.room_not_exist')
+    };
+  }
 
-  if (!room) return { success: false, message: i18n('alert_message.room_not_exist') };
-  else return {
+  if (!isSameChannel(room, message)) return { success: false };
+  return {
     success: true,
-    data: room.songs,
+    data: { songs: room.songs },
   };
 };
 

@@ -30,7 +30,7 @@ const help = async(
   await createMessage(
     message.channel as TextChannel,
     helpMsg,
-    { timeout: 20 },
+    { timeout: 15 * 1000 },
   );
 };
 

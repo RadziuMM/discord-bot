@@ -5,7 +5,7 @@ import { i18n } from '../../i18n';
 
 const mappedMessages: Map<string, MessageConstruct> = new Map();
 const interval = parseInt(<string>process.env.MESSAGE_INTERVAL, 10) * 1000 || 5 * 1000;
-const timeout = parseInt(<string>process.env.MESSAGE_TIMEOUT, 10) * 1000 || 20 * 1000;
+const timeout = parseInt(<string>process.env.MESSAGE_TIMEOUT, 10) * 1000 || 10 * 1000;
 
 const intervalContent = async(id: string) => {
   const messageInterval = setInterval(async () => {
