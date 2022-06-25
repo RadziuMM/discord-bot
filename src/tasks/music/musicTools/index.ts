@@ -2,7 +2,7 @@ import { Message, TextChannel } from 'discord.js';
 import play_dl from 'play-dl';
 import { createMessage } from '../../../util/messages';
 import { i18n } from '../../../i18n';
-import { Song } from '../../../disposer/interface/song.interface';
+import { Song } from '../disposer/interface/song.interface';
 import { LogType } from '../../../util/logger/enum/log-type.enum';
 import logger from '../../../util/logger';
 

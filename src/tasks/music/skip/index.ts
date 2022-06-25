@@ -1,5 +1,5 @@
 import { Message, TextChannel } from 'discord.js';
-import { skip } from '../../../disposer';
+import { skip } from '../disposer';
 import { hasPermissions, isAllowed } from '../../../guard';
 import Wheel from '../../../guard/enum/group.enum';
 import Permission from '../../../guard/enum/permission.enum';
@@ -23,7 +23,5 @@ export default async (message: Message): Promise<void> => {
   const args = message.content.split(' ');  
   const skipBy = Math.max(Number(args[1]) || 1, 1);
   
-  // skip counting songs from 0;
-  await skip(message, skipBy - 1);
-  logger(`Skipped ${skipBy} songs.`, LogType.INFO);
+  await skip(message, skipBy);
 };

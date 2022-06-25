@@ -1,14 +1,14 @@
 import { Message, TextChannel } from 'discord.js';
 import { createMessage } from '../../../util/messages';
 import { i18n } from '../../../i18n';
-import { addToQueue } from '../../../disposer';
+import { addToQueue } from '../disposer';
 import { findSongsByArgs } from '../musicTools';
 import { hasPermissions, isAllowed } from '../../../guard';
 import Permission from '../../../guard/enum/permission.enum';
 import Wheel from '../../../guard/enum/group.enum';
 import logger from '../../../util/logger';
 import { LogType } from '../../../util/logger/enum/log-type.enum';
-import { Song } from '../../../disposer/interface/song.interface';
+import { Song } from '../disposer/interface/song.interface';
 
 export default async (message: Message): Promise<void> => {
   if (

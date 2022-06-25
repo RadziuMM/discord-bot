@@ -1,5 +1,5 @@
 import { Message } from 'discord.js';
-import { leaveRoom } from '../../../disposer';
+import { leaveRoom } from '../disposer';
 import { hasPermissions, isAllowed } from '../../../guard';
 import Wheel from '../../../guard/enum/group.enum';
 import Permission from '../../../guard/enum/permission.enum';

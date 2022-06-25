@@ -1,5 +1,5 @@
 import { Message, TextChannel } from 'discord.js';
-import { playNext } from '../../../disposer';
+import { playNext } from '../disposer';
 import { hasPermissions, isAllowed } from '../../../guard';
 import Wheel from '../../../guard/enum/group.enum';
 import Permission from '../../../guard/enum/permission.enum';
@@ -32,14 +32,14 @@ export default async (message: Message): Promise<void> => {
     logger('Songs found.', LogType.INFO);
 
     await playNext(message, songs.slice(0, 20));
-    
     await createMessage(
       message.channel as TextChannel,
       songs.length === 1 
         ? i18n('message.added_song', { title: songs[0].title })
         : i18n('message.added_songs'),
     );
-  } catch (error) {
+  } catch (error: any) {
+    logger(`An error occurred while adding a song as next. Error: ${error.message}`, LogType.ERROR);
     await createMessage(
       message.channel as TextChannel,
       i18n('alert_message.unknow_error'),

@@ -1,5 +1,5 @@
 import { Message, TextChannel } from 'discord.js';
-import { getQueue } from '../../../disposer';
+import { getQueue } from '../disposer';
 import { hasPermissions, isAllowed } from '../../../guard';
 import Wheel from '../../../guard/enum/group.enum';
 import Permission from '../../../guard/enum/permission.enum';

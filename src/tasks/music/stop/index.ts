@@ -1,10 +1,8 @@
 import { Message, TextChannel } from 'discord.js';
-import { stop } from '../../../disposer';
+import { stop } from '../disposer';
 import { hasPermissions, isAllowed } from '../../../guard';
 import Wheel from '../../../guard/enum/group.enum';
 import Permission from '../../../guard/enum/permission.enum';
-import logger from '../../../util/logger';
-import { LogType } from '../../../util/logger/enum/log-type.enum';
 
 export default async(message: Message): Promise<void> => {
   if (
@@ -21,5 +19,4 @@ export default async(message: Message): Promise<void> => {
   ) return;
   
   await stop(message);
-  logger(`The playlist has been stopped.`, LogType.INFO);
 };
