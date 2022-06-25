@@ -5,7 +5,7 @@ import { LogType } from '../../../../../util/logger/enum/log-type.enum';
 import { createMessage } from '../../../../../util/messages';
 import { Room } from '../../interface/room.interface';
 
-export default async(
+export default async (
   room: Room,
   message: Message,
 ): Promise<boolean> => {
@@ -15,7 +15,7 @@ export default async(
       i18n('alert_message.not_in_same_channel'),
     );
 
-    logger(`The user was in a different room from the bot.`, LogType.INFO);
+    logger('The user was in a different room from the bot.', LogType.INFO);
     return false;
   }
 

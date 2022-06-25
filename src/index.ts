@@ -3,7 +3,6 @@ import moment from 'moment';
 import { Client } from 'discord.js';
 import { LogType } from './util/logger/enum/log-type.enum';
 import logger from './util/logger';
-import CustomError from './util/error';
 import tasks from './tasks';
 import Config from './config';
 
@@ -13,12 +12,7 @@ const main = () => {
   logger('Application initialization', LogType.INFO);
 
   if (!Config.token) {
-    try {
-      throw new CustomError('Token has not been entered!');
-    } catch (_error) {
-      const error: CustomError = _error as CustomError;
-      return logger(error.message, LogType.CRITICAL);
-    }
+    return logger('Token has not been entered!', LogType.CRITICAL);
   }
 
   const client = new Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_VOICE_STATES'] });
@@ -43,10 +37,10 @@ const main = () => {
         .find(({ fullComand, shortcut }) => [fullComand, shortcut].includes(command));
 
       if (task) {
-        task.method(message)
+        task.method(message);
         logger(`#${message.guild?.name}: @${message.author.username}: !${command} - full request: "${message.content}"`, LogType.INFO);
-      };
-      
+      }
+
       message.delete();
     }
   });

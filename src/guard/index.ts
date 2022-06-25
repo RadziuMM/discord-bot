@@ -8,30 +8,29 @@ import logger from '../util/logger';
 import { LogType } from '../util/logger/enum/log-type.enum';
 
 const inWheel = (
-  user: Record<string,any>,
+  user: Record<string, any>,
   group: Record<string, any>,
   wheelName: Wheel,
 ) => {
   const wheelGroups = Config.wheelGroups as any;
   if (wheelGroups[`not_${wheelName.toLowerCase()}`]?.includes(user.id)) {
     return false;
-  } else {
-    return group.includes(user.id) || user.roles.some((item: string) => group.includes(item));
   }
+  return group.includes(user.id) || user.roles.some((item: string) => group.includes(item));
 };
 
-const isAllowed = async(message: Message, wheels: Wheel[]) => {
+const isAllowed = async (message: Message, wheels: Wheel[]) => {
   const user = {
     id: message.author.id,
     roles: message.member?.roles.cache.map((role) => role.name),
   };
 
   const userWheels = [
-    ...inWheel(user, Config.wheelGroups.super, Wheel.SUPER)? [Wheel.SUPER] : [],
-    ...inWheel(user, Config.wheelGroups.admin, Wheel.ADMIN)? [Wheel.ADMIN] : [],
-    ...inWheel(user, Config.wheelGroups.wheel0, Wheel.WHEEL0)? [Wheel.WHEEL0] : [],
-    ...inWheel(user, Config.wheelGroups.wheel1, Wheel.WHEEL1)? [Wheel.WHEEL1] : [],
-    ...inWheel(user, Config.wheelGroups.wheel2, Wheel.WHEEL2)? [Wheel.WHEEL2] : [],
+    ...inWheel(user, Config.wheelGroups.super, Wheel.SUPER) ? [Wheel.SUPER] : [],
+    ...inWheel(user, Config.wheelGroups.admin, Wheel.ADMIN) ? [Wheel.ADMIN] : [],
+    ...inWheel(user, Config.wheelGroups.wheel0, Wheel.WHEEL0) ? [Wheel.WHEEL0] : [],
+    ...inWheel(user, Config.wheelGroups.wheel1, Wheel.WHEEL1) ? [Wheel.WHEEL1] : [],
+    ...inWheel(user, Config.wheelGroups.wheel2, Wheel.WHEEL2) ? [Wheel.WHEEL2] : [],
   ];
 
   const result = wheels.some((item: Wheel) => userWheels.includes(item));
@@ -44,9 +43,9 @@ const isAllowed = async(message: Message, wheels: Wheel[]) => {
   }
 
   return result;
-}
+};
 
-const hasPermissions = async(message: Message, permissions: Permission[]) => {
+const hasPermissions = async (message: Message, permissions: Permission[]) => {
   const voiceChannel: any = message.member?.voice?.channel;
   const msgPermissions = voiceChannel?.permissionsFor(message.client?.user);
 
@@ -75,7 +74,7 @@ const hasPermissions = async(message: Message, permissions: Permission[]) => {
   }
 
   return true;
-}
+};
 
 export {
   isAllowed,

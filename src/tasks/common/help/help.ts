@@ -5,7 +5,7 @@ import { hasPermissions, isAllowed } from '../../../guard';
 import Wheel from '../../../guard/enum/group.enum';
 import Permission from '../../../guard/enum/permission.enum';
 
-const help = async(
+const help = async (
   message: Message,
   tasks: Record<string, any>,
   commands: Record<string, string>,
@@ -21,11 +21,11 @@ const help = async(
   ) return;
 
   let helpMsg = `${i18n('command_description.header')} \n`;
-  helpMsg += `**${commands.fullComand}/${commands.shortcut}** - ${i18n('command_description.help')} \n`
+  helpMsg += `**${commands.fullComand}/${commands.shortcut}** - ${i18n('command_description.help')} \n`;
 
   Object.keys(tasks).forEach((key: string) => {
-    helpMsg += `**${tasks[key].fullComand}/${tasks[key].shortcut}** - ${tasks[key].description} \n`
-  })
+    helpMsg += `**${tasks[key].fullComand}/${tasks[key].shortcut}** - ${tasks[key].description} \n`;
+  });
 
   await createMessage(
     message.channel as TextChannel,
@@ -38,7 +38,7 @@ export default (tasks: Record<string, any>): Record<string, any> => {
   const commands = {
     fullComand: 'help',
     shortcut: 'h',
-  }
+  };
 
   return {
     ...commands,

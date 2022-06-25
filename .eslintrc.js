@@ -26,5 +26,7 @@ module.exports = {
     'import/no-unresolved': 'off',
     'consistent-return': 'off',
     'no-param-reassign': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
   },
 };

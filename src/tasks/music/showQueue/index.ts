@@ -17,7 +17,7 @@ export default async (message: Message): Promise<void> => {
   ) return;
 
   const { success, data, message: _message } = await getQueue(message);
-  
+
   if (!success && _message) {
     createMessage(message.channel as TextChannel, _message);
   } else if (data?.songs && !data?.songs?.length) {
@@ -27,9 +27,9 @@ export default async (message: Message): Promise<void> => {
     );
   } else if (data?.songs) {
     let msg = '**Queue** \n';
-    const min = Math.min(10, data.songs.length)
-    for(let i = 0; i < min; i++) {
-      msg += i 
+    const min = Math.min(10, data.songs.length);
+    for (let i = 0; i < min; i += 1) {
+      msg += i
         ? `#${i} - **${data.songs[i].title}** \n`
         : `${i18n('message.queue_now', { title: data.songs[i].title })} \n`;
     }

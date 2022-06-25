@@ -5,13 +5,12 @@ import { LogType } from '../../../../../util/logger/enum/log-type.enum';
 import { Response } from '../../interface/response.interface';
 import { Room } from '../../interface/room.interface';
 
-export default async(
+export default async (
   message: Message,
   map: Record<string, any>,
 ): Promise<Response> => {
   const room: Room = map.get(message.guild!.id);
-  if (!room || !isSameChannel(room, message)) 
-    return { success: false };
+  if (!room || !isSameChannel(room, message)) { return { success: false }; }
 
   room.songs = [];
   resetRoom(room);

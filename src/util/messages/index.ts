@@ -7,49 +7,10 @@ const mappedMessages: Map<string, MessageConstruct> = new Map();
 const interval = parseInt(<string>process.env.MESSAGE_INTERVAL, 10) * 1000 || 5 * 1000;
 const timeout = parseInt(<string>process.env.MESSAGE_TIMEOUT, 10) * 1000 || 10 * 1000;
 
-const intervalContent = async(id: string) => {
-  const messageInterval = setInterval(async () => {
-    const element: MessageConstruct = mappedMessages.get(id) as MessageConstruct;
-    element.deleteAfter -= interval;
-    if (0 >= element.deleteAfter) {
-      clearInterval(messageInterval);
-      await deleteMessage(id);
-    } else {
-      if (element.options?.countdown) {
-        await editMessage(id, i18n('message.left', {
-          time: new Date(element.deleteAfter).toISOString().substring(11, 19),
-          text: element.options?.countdown,
-        }));
-      }
-    }
-    mappedMessages.set(id, element);
-  }, interval);
-}
-
-const createMessage = async (
-  textChannel: TextChannel,
-  content: string,
-  options: Record<string, any> = {},
-) => {
-  const id = uuidv1();
-  await textChannel.send(content).then((message: Message) => {
-    mappedMessages.set(id, {
-      id,
-      textChannel,
-      message,
-      deleteAfter: options.timeout || timeout,
-      options,
-      intervalFunction: () => intervalContent(id),
-    });
-    mappedMessages.get(id)?.intervalFunction();
-  });
-  return id;
-};
-
 const deleteMessage = async (id: string) => {
   const element = mappedMessages.get(id);
   if (!element) return;
-  
+
   if (element.deleteAfter > 0) {
     element.deleteAfter = 0;
   } else {
@@ -76,6 +37,43 @@ const editMessage = async (
   } catch (_error) {
     await deleteMessage(id);
   }
+};
+
+const intervalContent = async (id: string) => {
+  const messageInterval = setInterval(async () => {
+    const element: MessageConstruct = mappedMessages.get(id) as MessageConstruct;
+    element.deleteAfter -= interval;
+    if (element.deleteAfter <= 0) {
+      clearInterval(messageInterval);
+      await deleteMessage(id);
+    } else if (element.options?.countdown) {
+      await editMessage(id, i18n('message.left', {
+        time: new Date(element.deleteAfter).toISOString().substring(11, 19),
+        text: element.options?.countdown,
+      }));
+    }
+    mappedMessages.set(id, element);
+  }, interval);
+};
+
+const createMessage = async (
+  textChannel: TextChannel,
+  content: string,
+  options: Record<string, any> = {},
+) => {
+  const id = uuidv1();
+  await textChannel.send(content).then((message: Message) => {
+    mappedMessages.set(id, {
+      id,
+      textChannel,
+      message,
+      deleteAfter: options.timeout || timeout,
+      options,
+      intervalFunction: () => intervalContent(id),
+    });
+    mappedMessages.get(id)?.intervalFunction();
+  });
+  return id;
 };
 
 export {

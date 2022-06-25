@@ -29,7 +29,7 @@ export default async (message: Message): Promise<void> => {
   const members = message?.mentions?.members;
   if (!members) return;
 
-  try { 
+  try {
     members.forEach((user: any) => {
       if (user.voice.channel) {
         user.voice.setChannel(voiceChannel);

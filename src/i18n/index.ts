@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { readFileSync, readdirSync } from 'fs';
 import path from 'path';
 import logger from '../util/logger';
@@ -36,7 +35,7 @@ const getTranslation = (
   return keys.reduce((
     previous: string,
     current: string | any,
-    index: number
+    index: number,
   ): string => (
     index <= 1
       ? translation[previous]?.[current]
