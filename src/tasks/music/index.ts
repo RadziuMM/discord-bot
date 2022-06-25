@@ -9,8 +9,8 @@ import leave from './leave';
 
 export default {
   showQueue: {
-    fullComand: 'showPlaylist',
-    shortcut: 'spl',
+    fullComand: 'list',
+    shortcut: 'l',
     description: i18n('command_description.showQueue'),
     method: (message: Message) => showQueue(message),
   },

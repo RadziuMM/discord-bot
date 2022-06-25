@@ -14,6 +14,5 @@ export default async (message: Message): Promise<void> => {
     ]) || !await hasPermissions(message, [Permission.WRITE])
   ) return;
 
-  const id = message?.guild?.id || '';
-  await leaveRoom(id);
+  await leaveRoom(message);
 };

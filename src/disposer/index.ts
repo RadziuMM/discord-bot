@@ -2,6 +2,7 @@ import {
   AudioPlayerStatus,
 	createAudioPlayer,
 	createAudioResource,
+	DiscordGatewayAdapterCreator,
 	joinVoiceChannel,
 } from '@discordjs/voice';
 import { i18n } from '../i18n';
@@ -12,22 +13,43 @@ import { createMessage, deleteMessage } from '../util/messages';
 import { Room } from './interface/room.interface';
 import { Song } from './interface/song.interface';
 import { Message } from 'discord.js';
+import { Response } from './interface/response.interface';
 
 const map: Map<string, any> = new Map();
 
-const joinRoom = async(message: any): Promise<void> => {
-  if(map.get(message.guild.id)) {
-    await leaveRoom(message.guild.id);
+const isSameChannel = (
+  room: Room,
+  message: Message,
+): boolean => {
+  if (room.voiceChannel !== message.member?.voice.channel) {
+    createMessage(
+      room.textChannel,
+      i18n('alert_message.not_in_same_channel'),
+    );
+    logger(`The user was in a different room from the bot.`, LogType.INFO);
+    return false;
   }
 
-  const voiceChannel = message.member.voice.channel;
+  return true;
+};
+
+const joinRoom = async(
+  message: Message,
+): Promise<Response> => {
+  if(map.get(message.guild!.id)) {
+    await leaveRoom(message);
+  }
+
+  const voiceChannel = message.member!.voice.channel;
+  const adapter = message.guild!.voiceAdapterCreator !as DiscordGatewayAdapterCreator;
+
   const room: Room = {
     textChannel: message.channel,
     voiceChannel: voiceChannel,
     connection: joinVoiceChannel({
-      channelId: voiceChannel.id,
-      guildId: message.guild.id,
-      adapterCreator: message.guild.voiceAdapterCreator,
+      channelId: voiceChannel!.id,
+      guildId: message.guild!.id,
+      adapterCreator: adapter,
     }),
     player: createAudioPlayer(),
     songs: [],
@@ -40,10 +62,10 @@ const joinRoom = async(message: any): Promise<void> => {
     room.isPlaying = false;
     room.songs.shift();
     if (room.songs.length) {
-      await play(message.guild.id);
+      await play(message.guild!.id);
     } else {
       room.idle = setTimeout(
-        async() => await leaveRoom(message.guild.id),
+        async() => await leaveRoom(message),
         5 * 60 * 1000,
       );
     }
@@ -52,15 +74,20 @@ const joinRoom = async(message: any): Promise<void> => {
   room.player.on('error', async(error: any) => {
     logger(`A problem was encountered while playing a song. Error: ${error.message}`, LogType.ERROR);
     room.songs.shift();
-    await play(message.guild.id);
+    await play(message.guild!.id);
   });
 
-  map.set(message.guild.id, room);
+  map.set(message.guild!.id, room);
+  return { success: true };
 }
 
-const leaveRoom = async(id: any): Promise<void> => {
-  const room: Room = map.get(id);
-  if (!room) return;
+const leaveRoom = async(
+  message: Message,
+): Promise<Response> => {
+  const room: Room = map.get(message.guild!.id);
+  if (!room || !isSameChannel(room, message)) {
+    return { success: false };
+  }
 
   if (room.trackedSongMessage) {
     deleteMessage(room.trackedSongMessage);
@@ -70,13 +97,16 @@ const leaveRoom = async(id: any): Promise<void> => {
   room.textChannel = null;
   await room.connection.destroy();
 
-  map.delete(id);
-  logger(`Bot left the room #${id}`, LogType.INFO);
+  map.delete(message.guild!.id);
+  logger(`Bot left the room #${message.guild!.id}`, LogType.INFO);
+  return { success: true };
 }
 
-const play = async(id: string): Promise<void> => {
+const play = async(
+  id: string,
+): Promise<Response> => {
   const room: Room = map.get(id);
-  if (!room || !room.songs?.length) return;
+  if (!room || !room.songs?.length) return { success: false };
   if (!room.player) room.player = createAudioPlayer();
 
   try {
@@ -101,6 +131,7 @@ const play = async(id: string): Promise<void> => {
         countdown: `#${room.songs[0]?.title}`,
       },
     );
+    return { success: true };
   } catch (error) {
     room.isPlaying = false;
     if(room.trackedSongMessage) deleteMessage(room.trackedSongMessage);
@@ -108,43 +139,54 @@ const play = async(id: string): Promise<void> => {
     logger(`A problem was encountered while playing a song #${room.songs[0]?.title}. Error message:${error}`, LogType.ERROR);
     createMessage(
       room.textChannel,
-      i18n('alert_message.unknow_error')
+      i18n('alert_message.unknow_error'),
     );
+    return { success: false };
   }
 }
 
-const addToQueue = async(message: any, songs: Song[]): Promise<any> => {
-  const room: Room = map.get(message.guild.id);
-
+const addToQueue = async(
+  message: Message,
+  songs: Song[],
+): Promise<Response> => {
+  const room: Room = map.get(message.guild!.id);
   if (!room?.voiceChannel) {
     await joinRoom(message);
     return addToQueue(message, songs);
   }
 
+  if (!isSameChannel(room, message)) {
+    return { success: false };
+  }
+
   songs.forEach(async(song: Song) => room.songs.push(song));
   logger(`Songs added to queue.`, LogType.INFO);
 
-  if (!room.isPlaying) play(message.guild.id);
+  if (!room.isPlaying) play(message.guild!.id);
+  return { success: true };
 }
 
-const getQueue = async(id: string): Promise<Record<string, any>> => {
-  const room: Room = map.get(id);
-  if (!room) {
-    return {
-      success: false,
-      data: null,
-    };
-  } else {
-    return {
-      success: true,
-      data: room.songs,
-    };
-  }
+const getQueue = async(
+  message: Message,
+): Promise<Response> => {
+  const room: Room = map.get(message.guild!.id);
+  if (!isSameChannel(room, message)) return { success: false };
+
+  if (!room) return { success: false, message: i18n('alert_message.room_not_exist') };
+  else return {
+    success: true,
+    data: room.songs,
+  };
 };
 
-const playNext = async(message: Message, songs: Song[]): Promise<void> => {
-  const id = message?.guild?.id || '';
-  const room: Room = map.get(id);
+const playNext = async(
+  message: Message,
+  songs: Song[],
+): Promise<Response|Promise<Response>> => {
+  const room: Room = map.get(message.guild!.id);
+  if (!isSameChannel(room, message)) {
+    return { success: false };
+  }
 
   if (!room || !room?.voiceChannel) {
     await joinRoom(message);
@@ -153,19 +195,25 @@ const playNext = async(message: Message, songs: Song[]): Promise<void> => {
 
   if (!room.songs.length) {
     room.songs = songs;
-    return play(id);
+    return play(message.guild!.id);
   }
   
   const _songs = [...room.songs];
   const cutt = _songs.shift() as Song;
   
   room.songs = [cutt, ...songs, ..._songs];
-  if (!room.songs.length) play(id);
+  if (!room.songs.length) play(message.guild!.id);
+  return { success: true };
 }
 
-const skip = async(id: string, skipBy: number): Promise<void> => {
-  const room: Room = map.get(id);
-  if (!room || !room?.songs?.length) return;
+const skip = async(
+  message: Message,
+  skipBy: number,
+): Promise<Response> => {
+  const room: Room = map.get(message.guild!.id);
+  if (!room || !isSameChannel(room, message) || !room?.songs?.length) {
+    return { success: false };
+  }
 
   for (let i = 0; i < skipBy; i += 1) room.songs.shift();
   
@@ -176,10 +224,17 @@ const skip = async(id: string, skipBy: number): Promise<void> => {
 
   room.isPlaying = false;
   room.player.stop();
+  return { success: true };
 }
 
-const stop = async(message: any): Promise<void> => {
-  const room: Room = map.get(message.guild.id);
+const stop = async(
+  message: Message,
+): Promise<Response> => {
+  const room: Room = map.get(message.guild!.id);
+  if (!isSameChannel(room, message)) {
+    return { success: false };
+  }
+
   if (room?.textChannel) {
     room.songs = [];
     room.isPlaying = false;
@@ -190,6 +245,8 @@ const stop = async(message: any): Promise<void> => {
     deleteMessage(room.trackedSongMessage);
     room.trackedSongMessage = null;
   }
+
+  return { success: true };
 }
 
 export {

@@ -13,6 +13,7 @@
     "forbidden": "You do not have permission to execute this command, the incident has been logged.",
     "bot_cannot_access": "The bot does not have permission to execute this command.",
     "room_not_found": "The bot cannot find your room.",
+    "room_not_exist": "The bot is not assigned to any of the rooms.",
     "private_playlist": "You can't use private mixtapes"
   },
   "command_description": {

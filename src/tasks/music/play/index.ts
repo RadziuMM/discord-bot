@@ -8,6 +8,7 @@ import Permission from '../../../guard/enum/permission.enum';
 import Wheel from '../../../guard/enum/group.enum';
 import logger from '../../../util/logger';
 import { LogType } from '../../../util/logger/enum/log-type.enum';
+import { Song } from '../../../disposer/interface/song.interface';
 
 export default async (message: Message): Promise<void> => {
   if (
@@ -27,11 +28,12 @@ export default async (message: Message): Promise<void> => {
   args.shift();
 
   try {
-    const songs: any = await findSongsByArgs(message, args);
+    const songs: Song[] = await findSongsByArgs(message, args);
     if (!songs.length) return;
-
     logger('Songs found.', LogType.INFO);
-    await addToQueue(message, songs.slice(0, 20));
+
+    const { success } = await addToQueue(message, songs.slice(0, 20));
+    if (!success) return;
     
     await createMessage(
       message.channel as TextChannel,
