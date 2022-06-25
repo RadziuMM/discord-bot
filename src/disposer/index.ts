@@ -62,6 +62,11 @@ const leaveRoom = async(id: any): Promise<void> => {
   const room: Room = map.get(id);
   if (!room) return;
 
+  if (room.trackedSongMessage) {
+    deleteMessage(room.trackedSongMessage);
+    room.trackedSongMessage = null;
+  }
+
   room.textChannel = null;
   await room.connection.destroy();
 
@@ -90,10 +95,10 @@ const play = async(id: string): Promise<void> => {
     if(room.trackedSongMessage) deleteMessage(room.trackedSongMessage);
     room.trackedSongMessage = await createMessage(
       room.textChannel, 
-      `#${room.songs[0].title}`, 
+      `#${room.songs[0]?.title}`, 
       {
-        timeout: room.songs[0].lengthSeconds * 1000,
-        countdown: `#${room.songs[0].title}`,
+        timeout: room.songs[0]?.lengthSeconds * 1000,
+        countdown: `#${room.songs[0]?.title}`,
       },
     );
   } catch (error) {
@@ -101,7 +106,10 @@ const play = async(id: string): Promise<void> => {
     if(room.trackedSongMessage) deleteMessage(room.trackedSongMessage);
     
     logger(`A problem was encountered while playing a song #${room.songs[0]?.title}. Error message:${error}`, LogType.ERROR);
-    createMessage(room.textChannel, i18n('message.error.fail_play_song', { title: room.songs[0]?.title }), {});
+    createMessage(
+      room.textChannel,
+      i18n('alert_message.unknow_error')
+    );
   }
 }
 
@@ -159,17 +167,15 @@ const skip = async(id: string, skipBy: number): Promise<void> => {
   const room: Room = map.get(id);
   if (!room || !room?.songs?.length) return;
 
-  const skipTo = Math.max(skipBy, 1);
-  for (let i = 0; i < skipTo; i+= 1) room.songs.shift();
+  for (let i = 0; i < skipBy; i += 1) room.songs.shift();
   
   if (room.trackedSongMessage) {
     deleteMessage(room.trackedSongMessage);
     room.trackedSongMessage = null;
   }
 
-  room.player.stop();
   room.isPlaying = false;
-  if (room.songs.length) play(id);
+  room.player.stop();
 }
 
 const stop = async(message: any): Promise<void> => {

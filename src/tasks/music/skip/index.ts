@@ -20,12 +20,13 @@ export default async (message: Message): Promise<void> => {
     ])
   ) return;
   
-  const args = message.content.split(' ');
-  const skipTo = args[1] === '1'
-    ? NaN : Math.max(Number(args[1]) - 1, 0);
-  
   const id = message?.guild?.id || '';
-  await skip(id, skipTo);
-
-  logger(`Skipped ${skipTo} songs.`, LogType.INFO);
+  const args = message.content.split(' ');
+  
+  const num = Number(args[1]) || 1;
+  const skipBy = Math.max(num, 1);
+  
+  // skip counting songs from 0;
+  await skip(id, skipBy - 1);
+  logger(`Skipped ${skipBy} songs.`, LogType.INFO);
 };

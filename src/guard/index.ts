@@ -4,6 +4,8 @@ import Config from '../config';
 import Permission from './enum/permission.enum';
 import { createMessage } from '../util/messages';
 import { i18n } from '../i18n';
+import logger from '../util/logger';
+import { LogType } from '../util/logger/enum/log-type.enum';
 
 const inWheel = (
   user: Record<string,any>,
@@ -34,6 +36,7 @@ const isAllowed = async(message: Message, wheels: Wheel[]) => {
 
   const result = wheels.some((item: Wheel) => userWheels.includes(item));
   if (!result) {
+    logger(`User @${message.author.username} tried to use forbidden commands.`, LogType.WARN);
     await createMessage(
       message.channel as TextChannel,
       i18n('alert_message.forbidden'),
