@@ -1,10 +1,9 @@
 import { Message, TextChannel } from 'discord.js';
 import playDl from 'play-dl';
-import { createMessage } from '../../../util/messages';
-import { i18n } from '../../../i18n';
-import { Song } from '../disposer/interface/song.interface';
-import { LogType } from '../../../util/logger/enum/log-type.enum';
-import logger from '../../../util/logger';
+import { createMessage } from '../../../../util/messages';
+import { i18n } from '../../../../i18n';
+import { Song } from '../../interface/song.interface';
+import { LogType, logger } from '../../../../util/logger';
 
 const fetchByPhrase = async (args: string[]): Promise<any[]> => {
   const phrase = args.join(' ');
@@ -99,7 +98,7 @@ const recognizeDataType = async (args: string[]): Promise<Record<string, any>> =
   };
 };
 
-const findSongsByArgs = async (message: Message, args: string[]): Promise<Song[]> => {
+const findSongsByArguments = async (message: Message, args: string[]): Promise<Song[]> => {
   const dataType = await recognizeDataType(args);
   const songs = dataType.valid ? await dataType.method(args) : [];
 
@@ -114,4 +113,4 @@ const findSongsByArgs = async (message: Message, args: string[]): Promise<Song[]
   return songs;
 };
 
-export default { findByArgs: findSongsByArgs, recognizeDataType };
+export { findSongsByArguments, recognizeDataType };

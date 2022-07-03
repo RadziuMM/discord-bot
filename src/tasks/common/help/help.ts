@@ -1,9 +1,9 @@
 import { Message, TextChannel } from 'discord.js';
 import { createMessage } from '../../../util/messages';
 import { i18n } from '../../../i18n';
-import { hasPermissions, isAllowed } from '../../../guard';
-import Wheel from '../../../guard/enum/group.enum';
-import Permission from '../../../guard/enum/permission.enum';
+import {
+  hasPermissions, isAllowed, Permission, Wheel,
+} from '../../../guard';
 
 const help = async (
   message: Message,

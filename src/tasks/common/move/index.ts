@@ -1,10 +1,9 @@
 import { Message, TextChannel } from 'discord.js';
-import { hasPermissions, isAllowed } from '../../../guard';
-import Wheel from '../../../guard/enum/group.enum';
-import Permission from '../../../guard/enum/permission.enum';
+import {
+  hasPermissions, isAllowed, Permission, Wheel,
+} from '../../../guard';
 import { i18n } from '../../../i18n';
-import logger from '../../../util/logger';
-import { LogType } from '../../../util/logger/enum/log-type.enum';
+import { LogType, logger } from '../../../util/logger';
 import { createMessage } from '../../../util/messages';
 
 export default async (message: Message): Promise<void> => {

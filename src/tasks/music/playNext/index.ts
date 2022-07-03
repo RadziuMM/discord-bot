@@ -1,15 +1,24 @@
 import { Message, TextChannel } from 'discord.js';
-import { playNext } from '../disposer';
-import { hasPermissions, isAllowed } from '../../../guard';
-import Wheel from '../../../guard/enum/group.enum';
-import Permission from '../../../guard/enum/permission.enum';
+import {
+  hasPermissions, isAllowed, Permission, Wheel,
+} from '../../../guard';
 import { i18n } from '../../../i18n';
-import logger from '../../../util/logger';
-import { LogType } from '../../../util/logger/enum/log-type.enum';
+import { LogType, logger } from '../../../util/logger';
 import { createMessage } from '../../../util/messages';
-import findSongs from '../musicTools';
+import { Room } from '../interface/room.interface';
+import { Song } from '../interface/song.interface';
+import {
+  addToQueue,
+  findSongsByArguments,
+  isSameChannel,
+  joinRoom,
+  run,
+} from '../utils';
 
-export default async (message: Message): Promise<void> => {
+export default async (
+  message: Message,
+  map: Record<string, any>,
+): Promise<void> => {
   if (
     !await isAllowed(message, [
       Wheel.WHEEL1,
@@ -27,11 +36,34 @@ export default async (message: Message): Promise<void> => {
   args.shift();
 
   try {
-    const songs: any = await findSongs.findByArgs(message, args);
-    if (!songs.length) return;
+    const newSongs = (await findSongsByArguments(message, args)).slice(0, 20);
+    if (!newSongs.length) return;
     logger('Songs found.', LogType.INFO);
 
-    await playNext(message, songs.slice(0, 20));
+    const { id } = message.guild!;
+    const room: Room = map.get(id);
+    if (!room || !room?.voiceChannel) {
+      await joinRoom(message, map);
+      await addToQueue(message, newSongs, map);
+      return;
+    }
+
+    if (!isSameChannel(room, message)) return;
+
+    if (!room.songs.length) {
+      room.songs = newSongs;
+      run(id, map);
+      return;
+    }
+
+    const songs = [...room.songs];
+    const firstSong = songs.shift() as Song;
+
+    room.songs = [firstSong, ...newSongs, ...songs];
+    if (!room.songs.length) run(id, map);
+
+    logger('New songs added as next.', LogType.INFO);
+
     await createMessage(
       message.channel as TextChannel,
       songs.length === 1

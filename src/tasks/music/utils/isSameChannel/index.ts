@@ -1,8 +1,7 @@
 import { Message, TextChannel } from 'discord.js';
-import { i18n } from '../../../../../i18n';
-import logger from '../../../../../util/logger';
-import { LogType } from '../../../../../util/logger/enum/log-type.enum';
-import { createMessage } from '../../../../../util/messages';
+import { i18n } from '../../../../i18n';
+import { LogType, logger } from '../../../../util/logger';
+import { createMessage } from '../../../../util/messages';
 import { Room } from '../../interface/room.interface';
 
 export default async (

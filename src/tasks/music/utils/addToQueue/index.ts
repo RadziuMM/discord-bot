@@ -1,25 +1,20 @@
 import { Message } from 'discord.js';
-import logger from '../../../../../util/logger';
-import { LogType } from '../../../../../util/logger/enum/log-type.enum';
-import { Response } from '../../interface/response.interface';
+import { logger, LogType } from '../../../../util/logger';
+import { isSameChannel, joinRoom, run } from '..';
+import { TaskStatus } from '../../interface/task-status.interface';
 import { Room } from '../../interface/room.interface';
 import { Song } from '../../interface/song.interface';
-import {
-  addToQueue,
-  isSameChannel,
-  joinRoom,
-  play,
-} from '../..';
 
 export default async (
   message: Message,
   songs: Song[],
   map: Record<string, any>,
-): Promise<Response> => {
-  const room: Room = map.get(message.guild!.id);
+): Promise<TaskStatus> => {
+  const { id } = message.guild!;
+  let room: Room = map.get(id);
+
   if (!room?.voiceChannel) {
-    await joinRoom(message);
-    return addToQueue(message, songs);
+    room = await joinRoom(message, map);
   }
 
   if (!isSameChannel(room, message)) {
@@ -27,7 +22,7 @@ export default async (
   }
 
   songs.forEach(async (song: Song) => room.songs.push(song));
-  if (!room.isPlaying) play(message.guild!.id);
+  if (!room.isPlaying) run(id, map);
 
   logger('Songs added to queue.', LogType.INFO);
   return { success: true };

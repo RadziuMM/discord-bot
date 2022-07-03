@@ -1,7 +1,6 @@
 import { readFileSync, readdirSync } from 'fs';
 import path from 'path';
-import logger from '../util/logger';
-import { LogType } from '../util/logger/enum/log-type.enum';
+import { LogType, logger } from '../util/logger';
 import CustomError from '../util/error';
 
 const folderPath = './src/i18n/locales';

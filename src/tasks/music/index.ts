@@ -7,41 +7,43 @@ import skip from './skip';
 import stop from './stop';
 import leave from './leave';
 
+const map: Map<string, any> = new Map();
+
 export default {
   showQueue: {
     fullComand: 'list',
     shortcut: 'l',
     description: i18n('command_description.showQueue'),
-    method: (message: Message) => showQueue(message),
+    method: (message: Message) => showQueue(message, map),
   },
   play: {
     fullComand: 'play',
     shortcut: 'p',
     description: i18n('command_description.play'),
-    method: (message: Message) => play(message),
+    method: (message: Message): Promise<any> => play(message, map),
   },
   playNext: {
     fullComand: 'next',
     shortcut: 'n',
     description: i18n('command_description.next'),
-    method: (message: Message) => playNext(message),
+    method: (message: Message) => playNext(message, map),
   },
   skip: {
     fullComand: 'skip',
     shortcut: 'fs',
     description: i18n('command_description.skip'),
-    method: (message: Message) => skip(message),
+    method: (message: Message) => skip(message, map),
   },
   stop: {
     fullComand: 'stop',
     shortcut: 'stop',
     description: i18n('command_description.stop'),
-    method: (message: Message) => stop(message),
+    method: (message: Message) => stop(message, map),
   },
   leave: {
     fullComand: 'leave',
     shortcut: 'leave',
     description: i18n('command_description.leave'),
-    method: (message: Message) => leave(message),
+    method: (message: Message) => leave(message, map),
   },
 };

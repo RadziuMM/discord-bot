@@ -6,17 +6,16 @@ import {
 } from '@discordjs/voice';
 import { Message } from 'discord.js';
 import { Room } from '../../interface/room.interface';
-import { leaveRoom, play } from '../..';
-import logger from '../../../../../util/logger';
-import { LogType } from '../../../../../util/logger/enum/log-type.enum';
-import { Response } from '../../interface/response.interface';
+import { LogType, logger } from '../../../../util/logger';
+import { leaveRoom, run } from '..';
 
 export default async (
   message: Message,
   map: Record<string, any>,
-): Promise<Response> => {
-  const oldRoom: Room = map.get(message.guild!.id);
-  if (oldRoom) await leaveRoom(message);
+): Promise<Room> => {
+  const { id } = message.guild!;
+  const oldRoom: Room = map.get(id);
+  if (oldRoom) await leaveRoom(message, map);
 
   const voiceChannel = message.member!.voice.channel;
   const adapter = message.guild!.voiceAdapterCreator !as DiscordGatewayAdapterCreator;
@@ -25,7 +24,7 @@ export default async (
     textChannel: message.channel,
     connection: joinVoiceChannel({
       channelId: voiceChannel!.id,
-      guildId: message.guild!.id,
+      guildId: id,
       adapterCreator: adapter,
     }),
     voiceChannel,
@@ -40,10 +39,10 @@ export default async (
     room.isPlaying = false;
     room.songs.shift();
     if (room.songs.length) {
-      await play(message.guild!.id);
+      await run(id, map);
     } else {
       room.idle = setTimeout(
-        async () => await leaveRoom(message),
+        async () => await leaveRoom(message, map),
         5 * 60 * 1000,
       );
     }
@@ -52,11 +51,11 @@ export default async (
   room.player.on('error', async (error: any) => {
     logger(`A problem was encountered while playing a song. Error: ${error.message}`, LogType.ERROR);
     room.songs.shift();
-    await play(message.guild!.id);
+    await run(id, map);
   });
 
-  map.set(message.guild!.id, room);
+  map.set(id, room);
 
-  logger(`Bot joined the room #${message.guild!.id}`, LogType.INFO);
-  return { success: true };
+  logger(`Bot joined the room #${id}`, LogType.INFO);
+  return room;
 };

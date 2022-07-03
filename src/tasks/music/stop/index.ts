@@ -1,10 +1,15 @@
 import { Message } from 'discord.js';
-import { stop } from '../disposer';
-import { hasPermissions, isAllowed } from '../../../guard';
-import Wheel from '../../../guard/enum/group.enum';
-import Permission from '../../../guard/enum/permission.enum';
+import {
+  hasPermissions, isAllowed, Permission, Wheel,
+} from '../../../guard';
+import { Room } from '../interface/room.interface';
+import { LogType, logger } from '../../../util/logger';
+import { isSameChannel, resetRoom } from '../utils';
 
-export default async (message: Message): Promise<void> => {
+export default async (
+  message: Message,
+  map: Record<string, any>,
+): Promise<void> => {
   if (
     !await isAllowed(message, [
       Wheel.WHEEL1,
@@ -18,5 +23,11 @@ export default async (message: Message): Promise<void> => {
     ])
   ) return;
 
-  await stop(message);
+  const room: Room = map.get(message.guild!.id);
+  if (!isSameChannel(room, message) || !room) return;
+
+  room.songs = [];
+  resetRoom(room);
+
+  logger('The playlist has been stopped.', LogType.INFO);
 };

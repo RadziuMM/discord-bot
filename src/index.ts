@@ -1,8 +1,7 @@
 import 'dotenv/config';
 import moment from 'moment';
 import { Client } from 'discord.js';
-import { LogType } from './util/logger/enum/log-type.enum';
-import logger from './util/logger';
+import { LogType, logger } from './util/logger';
 import tasks from './tasks';
 import Config from './config';
 

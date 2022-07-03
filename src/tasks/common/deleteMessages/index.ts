@@ -1,9 +1,8 @@
 import { Message } from 'discord.js';
-import { hasPermissions, isAllowed } from '../../../guard';
-import Wheel from '../../../guard/enum/group.enum';
-import Permission from '../../../guard/enum/permission.enum';
-import logger from '../../../util/logger';
-import { LogType } from '../../../util/logger/enum/log-type.enum';
+import {
+  hasPermissions, isAllowed, Permission, Wheel,
+} from '../../../guard';
+import { LogType, logger } from '../../../util/logger';
 
 export default async (message: Message): Promise<void> => {
   if (
