@@ -5,7 +5,7 @@ import { Room } from '../../interface/room.interface';
 
 export default async (message: Message, map: Record<string, any>) => {
   const room: Room = map.get(message.guild!.id);
-  if (!room || !isSameChannel(room, message)) return;
+  if (!room || !await isSameChannel(room, message)) return;
 
   room.songs = [];
   resetRoom(room);

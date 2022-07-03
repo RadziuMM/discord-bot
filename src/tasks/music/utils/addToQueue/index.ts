@@ -17,7 +17,7 @@ export default async (
     room = await joinRoom(message, map);
   }
 
-  if (!isSameChannel(room, message)) {
+  if (!await isSameChannel(room, message)) {
     return { success: false };
   }
 

@@ -1,25 +1,17 @@
 import { Message, TextChannel } from 'discord.js';
-import {
-  hasPermissions, isAllowed, Permission, Wheel,
-} from '../../../guard';
 import { createMessage } from '../../../util/messages';
-import { i18n } from '../../../i18n';
 import { logger, LogType } from '../../../util/logger';
+import { mayUse } from '../../../guard';
+import { i18n } from '../../../i18n';
+import { isSameChannel } from '../utils';
 import { Room } from '../interface/room.interface';
-import isSameChannel from '../utils/isSameChannel';
 
 export default async (
   message: Message,
   map: Record<string, any>,
 ): Promise<void> => {
-  if (
-    !await isAllowed(message, [
-      Wheel.WHEEL1,
-      Wheel.WHEEL2,
-      Wheel.ADMIN,
-      Wheel.SUPER,
-    ]) || !await hasPermissions(message, [Permission.WRITE])
-  ) return;
+  if (!await mayUse('task-showQueue', message)) return;
+
   const { id } = message.guild!;
   const room: Room = map.get(id);
 
@@ -31,7 +23,7 @@ export default async (
     return;
   }
 
-  if (!isSameChannel(room, message)) return;
+  if (!await isSameChannel(room, message)) return;
   logger(`Room ${message.guild!.id} song list downloaded.`, LogType.INFO);
 
   if (!room.songs?.length) {

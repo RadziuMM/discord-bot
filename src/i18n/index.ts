@@ -1,7 +1,6 @@
 import { readFileSync, readdirSync } from 'fs';
 import path from 'path';
 import { LogType, logger } from '../util/logger';
-import CustomError from '../util/error';
 
 const folderPath = './src/i18n/locales';
 const getJsonFromFile = (fileName : string) => ({
@@ -20,7 +19,7 @@ const locales: Record<string, any> = filesInLocales.length > 1
 
 if (!locales.en_US) {
   logger('No primary language found.(en_US.json)', LogType.ERROR);
-  throw new CustomError('No primary language found.(en_US.json)');
+  throw new Error('No primary language found.(en_US.json)');
 }
 
 const getTranslation = (

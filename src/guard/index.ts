@@ -2,6 +2,7 @@ import { Message, TextChannel } from 'discord.js';
 import { LogType, logger } from '../util/logger';
 import { createMessage } from '../util/messages';
 import { i18n } from '../i18n';
+import { factory } from './factory';
 import Permission from './enum/permission.enum';
 import Wheel from './enum/group.enum';
 
@@ -82,9 +83,19 @@ const hasPermissions = async (
   return true;
 };
 
+const mayUse = async (name: string, message: Message) => {
+  const { userGroups, premmisions } = factory[name];
+
+  return (
+    await isAllowed(message, userGroups)
+    && await hasPermissions(message, premmisions)
+  );
+};
+
 export {
   isAllowed,
   hasPermissions,
+  mayUse,
   Permission,
   Wheel,
 };

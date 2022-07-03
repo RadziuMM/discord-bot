@@ -1,29 +1,16 @@
 import { Message, TextChannel } from 'discord.js';
 import { createMessage } from '../../../util/messages';
-import { i18n } from '../../../i18n';
-import {
-  hasPermissions, isAllowed, Permission, Wheel,
-} from '../../../guard';
 import { LogType, logger } from '../../../util/logger';
-import { Song } from '../interface/song.interface';
+import { mayUse } from '../../../guard';
+import { i18n } from '../../../i18n';
 import { addToQueue, findSongsByArguments } from '../utils';
+import { Song } from '../interface/song.interface';
 
 export default async (
   message: Message,
   map: Record<string, any>,
 ): Promise<void> => {
-  if (
-    !await isAllowed(message, [
-      Wheel.WHEEL1,
-      Wheel.WHEEL2,
-      Wheel.ADMIN,
-      Wheel.SUPER,
-    ]) || !await hasPermissions(message, [
-      Permission.WRITE,
-      Permission.CONNECT,
-      Permission.SPEAK,
-    ])
-  ) return;
+  if (!await mayUse('task-play', message)) return;
 
   const args = message.content.split(' ');
   args.shift();

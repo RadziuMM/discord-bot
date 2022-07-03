@@ -1,16 +1,9 @@
 import { Message } from 'discord.js';
-import {
-  hasPermissions, isAllowed, Permission, Wheel,
-} from '../../../guard';
 import { LogType, logger } from '../../../util/logger';
+import { mayUse } from '../../../guard';
 
 export default async (message: Message): Promise<void> => {
-  if (
-    !await isAllowed(message, [
-      Wheel.ADMIN,
-      Wheel.SUPER,
-    ]) || !await hasPermissions(message, [Permission.WRITE])
-  ) return;
+  if (!await mayUse('task-deleteMessages', message)) return;
 
   /* eslint-disable no-restricted-globals */
   const args: any = message.content.split(' ');

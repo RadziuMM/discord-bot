@@ -1,24 +1,14 @@
 import { Message, TextChannel } from 'discord.js';
 import { createMessage } from '../../../util/messages';
+import { mayUse } from '../../../guard';
 import { i18n } from '../../../i18n';
-import {
-  hasPermissions, isAllowed, Permission, Wheel,
-} from '../../../guard';
 
 const help = async (
   message: Message,
   tasks: Record<string, any>,
   commands: Record<string, string>,
 ): Promise<void> => {
-  if (
-    !await isAllowed(message, [
-      Wheel.WHEEL0,
-      Wheel.WHEEL1,
-      Wheel.WHEEL2,
-      Wheel.ADMIN,
-      Wheel.SUPER,
-    ]) || !await hasPermissions(message, [Permission.WRITE])
-  ) return;
+  if (!await mayUse('task-help', message)) return;
 
   let helpMsg = `${i18n('command_description.header')} \n`;
   helpMsg += `**${commands.fullComand}/${commands.shortcut}** - ${i18n('command_description.help')} \n`;

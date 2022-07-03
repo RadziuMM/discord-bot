@@ -1,19 +1,11 @@
 import { Message, TextChannel } from 'discord.js';
-import {
-  hasPermissions, isAllowed, Permission, Wheel,
-} from '../../../guard';
-import { i18n } from '../../../i18n';
-import { LogType, logger } from '../../../util/logger';
 import { createMessage } from '../../../util/messages';
+import { LogType, logger } from '../../../util/logger';
+import { mayUse } from '../../../guard';
+import { i18n } from '../../../i18n';
 
 export default async (message: Message): Promise<void> => {
-  if (
-    !await isAllowed(message, [
-      Wheel.WHEEL2,
-      Wheel.ADMIN,
-      Wheel.SUPER,
-    ]) || !await hasPermissions(message, [Permission.WRITE])
-  ) return;
+  if (!await mayUse('task-move', message)) return;
 
   const voiceChannel: any = message.member?.voice?.channel;
   if (!voiceChannel) {

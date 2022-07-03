@@ -1,7 +1,5 @@
 import { Message, TextChannel } from 'discord.js';
-import {
-  hasPermissions, isAllowed, Permission, Wheel,
-} from '../../../guard';
+import { mayUse } from '../../../guard';
 import { i18n } from '../../../i18n';
 import { LogType, logger } from '../../../util/logger';
 import { createMessage } from '../../../util/messages';
@@ -19,18 +17,7 @@ export default async (
   message: Message,
   map: Record<string, any>,
 ): Promise<void> => {
-  if (
-    !await isAllowed(message, [
-      Wheel.WHEEL1,
-      Wheel.WHEEL2,
-      Wheel.ADMIN,
-      Wheel.SUPER,
-    ]) || !await hasPermissions(message, [
-      Permission.WRITE,
-      Permission.CONNECT,
-      Permission.SPEAK,
-    ])
-  ) return;
+  if (!await mayUse('task-playNext', message)) return;
 
   const args = message.content.split(' ');
   args.shift();
@@ -48,7 +35,7 @@ export default async (
       return;
     }
 
-    if (!isSameChannel(room, message)) return;
+    if (!await isSameChannel(room, message)) return;
 
     if (!room.songs.length) {
       room.songs = newSongs;
