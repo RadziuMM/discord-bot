@@ -1,20 +1,11 @@
 import { Message, TextChannel } from 'discord.js';
-import { hasPermissions, isAllowed } from '../../../guard';
-import Wheel from '../../../guard/enum/group.enum';
-import Permission from '../../../guard/enum/permission.enum';
-import { i18n } from '../../../i18n';
-import logger from '../../../util/logger';
-import { LogType } from '../../../util/logger/enum/log-type.enum';
 import { createMessage } from '../../../util/messages';
+import { LogType, logger } from '../../../util/logger';
+import { mayUse } from '../../../guard';
+import { i18n } from '../../../i18n';
 
 export default async (message: Message): Promise<void> => {
-  if (
-    !await isAllowed(message, [
-      Wheel.WHEEL2,
-      Wheel.ADMIN,
-      Wheel.SUPER,
-    ]) || !await hasPermissions(message, [Permission.WRITE])
-  ) return;
+  if (!await mayUse('task-move', message)) return;
 
   const voiceChannel: any = message.member?.voice?.channel;
   if (!voiceChannel) {

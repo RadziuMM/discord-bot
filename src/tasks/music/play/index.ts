@@ -1,38 +1,26 @@
 import { Message, TextChannel } from 'discord.js';
 import { createMessage } from '../../../util/messages';
+import { LogType, logger } from '../../../util/logger';
+import { mayUse } from '../../../guard';
 import { i18n } from '../../../i18n';
-import { addToQueue } from '../disposer';
-import findSongs from '../musicTools';
-import { hasPermissions, isAllowed } from '../../../guard';
-import Permission from '../../../guard/enum/permission.enum';
-import Wheel from '../../../guard/enum/group.enum';
-import logger from '../../../util/logger';
-import { LogType } from '../../../util/logger/enum/log-type.enum';
-import { Song } from '../disposer/interface/song.interface';
+import { addToQueue, findSongsByArguments } from '../utils';
+import { Song } from '../interface/song.interface';
 
-export default async (message: Message): Promise<void> => {
-  if (
-    !await isAllowed(message, [
-      Wheel.WHEEL1,
-      Wheel.WHEEL2,
-      Wheel.ADMIN,
-      Wheel.SUPER,
-    ]) || !await hasPermissions(message, [
-      Permission.WRITE,
-      Permission.CONNECT,
-      Permission.SPEAK,
-    ])
-  ) return;
+export default async (
+  message: Message,
+  map: Record<string, any>,
+): Promise<void> => {
+  if (!await mayUse('task-play', message)) return;
 
   const args = message.content.split(' ');
   args.shift();
 
   try {
-    const songs: Song[] = await findSongs.findByArgs(message, args);
+    const songs: Song[] = await findSongsByArguments(message, args);
     if (!songs.length) return;
     logger('Songs found.', LogType.INFO);
 
-    const { success } = await addToQueue(message, songs.slice(0, 20));
+    const { success } = await addToQueue(message, songs.slice(0, 20), map);
     if (!success) return;
 
     await createMessage(

@@ -12,7 +12,7 @@ const mods = {
   [LogType.INFO]: '\x1b[32m%s\x1b[0m',
 };
 
-export default (text: string, type?: LogType) => {
+const logger = (text: string, type?: LogType) => {
   const date = new Date();
 
   const time = moment(date).format('DD-MM-YYYY HH:mm:ss');
@@ -29,4 +29,9 @@ export default (text: string, type?: LogType) => {
   }
 
   return value;
+};
+
+export {
+  LogType,
+  logger,
 };

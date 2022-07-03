@@ -1,17 +1,16 @@
 import { createAudioPlayer, createAudioResource } from '@discordjs/voice';
 import playDl from 'play-dl';
-import { resetRoom } from '../..';
-import { i18n } from '../../../../../i18n';
-import logger from '../../../../../util/logger';
-import { LogType } from '../../../../../util/logger/enum/log-type.enum';
-import { createMessage, deleteMessage } from '../../../../../util/messages';
-import { Response } from '../../interface/response.interface';
+import { i18n } from '../../../../i18n';
+import { LogType, logger } from '../../../../util/logger';
+import { createMessage, deleteMessage } from '../../../../util/messages';
+import { TaskStatus } from '../../interface/task-status.interface';
 import { Room } from '../../interface/room.interface';
+import { resetRoom } from '..';
 
 export default async (
   id: string,
   map: Record<string, any>,
-): Promise<Response> => {
+): Promise<TaskStatus> => {
   const room: Room = map.get(id);
   if (!room || !room.songs?.length) { return { success: false }; }
 

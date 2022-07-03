@@ -1,18 +1,11 @@
 import { Message } from 'discord.js';
-import { leaveRoom } from '../disposer';
-import { hasPermissions, isAllowed } from '../../../guard';
-import Wheel from '../../../guard/enum/group.enum';
-import Permission from '../../../guard/enum/permission.enum';
+import { mayUse } from '../../../guard';
+import { leaveRoom } from '../utils';
 
-export default async (message: Message): Promise<void> => {
-  if (
-    !await isAllowed(message, [
-      Wheel.WHEEL1,
-      Wheel.WHEEL2,
-      Wheel.ADMIN,
-      Wheel.SUPER,
-    ]) || !await hasPermissions(message, [Permission.WRITE])
-  ) return;
-
-  await leaveRoom(message);
+export default async (
+  message: Message,
+  map: Record<string, any>,
+): Promise<void> => {
+  if (!await mayUse('task-leave', message)) return;
+  await leaveRoom(message, map);
 };

@@ -1,8 +1,7 @@
 import 'dotenv/config';
 import moment from 'moment';
 import { Client } from 'discord.js';
-import { LogType } from './util/logger/enum/log-type.enum';
-import logger from './util/logger';
+import { LogType, logger } from './util/logger';
 import tasks from './tasks';
 import Config from './config';
 
@@ -16,18 +15,9 @@ const main = () => {
   }
 
   const client = new Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_VOICE_STATES'] });
-
-  client.once('ready', () => {
-    logger('Connected!', LogType.INFO);
-  });
-
-  client.once('reconnecting', () => {
-    logger('Reconnecting!', LogType.WARN);
-  });
-
-  client.once('disconnect', () => {
-    logger('Disconnect!', LogType.INFO);
-  });
+  client.once('ready', (): any => logger('Connected!', LogType.INFO));
+  client.once('reconnecting', (): any => logger('Reconnecting!', LogType.WARN));
+  client.once('disconnect', (): any => logger('Disconnect!', LogType.INFO));
 
   client.on('messageCreate', async (message) => {
     if (message.content.startsWith(Config.prefix)) {

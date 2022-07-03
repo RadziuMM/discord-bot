@@ -1,17 +1,18 @@
 import { Message, TextChannel } from 'discord.js';
-import Wheel from './enum/group.enum';
-import Config from '../config';
-import Permission from './enum/permission.enum';
+import { LogType, logger } from '../util/logger';
 import { createMessage } from '../util/messages';
 import { i18n } from '../i18n';
-import logger from '../util/logger';
-import { LogType } from '../util/logger/enum/log-type.enum';
+import { factory } from './factory';
+import Permission from './enum/permission.enum';
+import Wheel from './enum/group.enum';
+
+import Config from '../config';
 
 const inWheel = (
   user: Record<string, any>,
   group: Record<string, any>,
   wheelName: Wheel,
-) => {
+): boolean => {
   const wheelGroups = Config.wheelGroups as any;
   if (wheelGroups[`not_${wheelName.toLowerCase()}`]?.includes(user.id)) {
     return false;
@@ -19,7 +20,10 @@ const inWheel = (
   return group.includes(user.id) || user.roles.some((item: string) => group.includes(item));
 };
 
-const isAllowed = async (message: Message, wheels: Wheel[]) => {
+const isAllowed = async (
+  message: Message,
+  wheels: Wheel[],
+): Promise<boolean> => {
   const user = {
     id: message.author.id,
     roles: message.member?.roles.cache.map((role) => role.name),
@@ -45,7 +49,10 @@ const isAllowed = async (message: Message, wheels: Wheel[]) => {
   return result;
 };
 
-const hasPermissions = async (message: Message, permissions: Permission[]) => {
+const hasPermissions = async (
+  message: Message,
+  permissions: Permission[],
+): Promise<boolean> => {
   const voiceChannel: any = message.member?.voice?.channel;
   const msgPermissions = voiceChannel?.permissionsFor(message.client?.user);
 
@@ -76,7 +83,19 @@ const hasPermissions = async (message: Message, permissions: Permission[]) => {
   return true;
 };
 
+const mayUse = async (name: string, message: Message) => {
+  const { userGroups, premmisions } = factory[name];
+
+  return (
+    await isAllowed(message, userGroups)
+    && await hasPermissions(message, premmisions)
+  );
+};
+
 export {
   isAllowed,
   hasPermissions,
+  mayUse,
+  Permission,
+  Wheel,
 };
